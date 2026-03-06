@@ -1,0 +1,445 @@
+/* Game Manager Styles - Main container */
+.game-manager {
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 100%);
+  color: #ffffff;
+  font-family: 'Arial', sans-serif;
+  overflow: hidden;
+}
+
+/* Main Menu */
+.main-menu {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.menu-container {
+  text-align: center;
+  max-width: 600px;
+  padding: 40px;
+  background: rgba(30, 30, 50, 0.9);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 200, 255, 0.2);
+  border: 2px solid rgba(0, 200, 255, 0.5);
+}
+
+.menu-container h1 {
+  font-size: 3.5em;
+  margin: 0 0 10px 0;
+  text-shadow: 0 0 20px rgba(0, 200, 255, 0.8);
+  color: #00c8ff;
+}
+
+.menu-container .subtitle {
+  font-size: 1.2em;
+  color: #888;
+  margin: 0 0 30px 0;
+}
+
+/* Difficulty Selector */
+.difficulty-selector {
+  margin: 30px 0;
+}
+
+.difficulty-selector h2 {
+  font-size: 1.5em;
+  margin: 0 0 20px 0;
+  color: #00c8ff;
+}
+
+.difficulty-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.difficulty-btn {
+  padding: 15px;
+  background: linear-gradient(135deg, #2a2a4e 0%, #1a1a3e 100%);
+  border: 2px solid #444;
+  color: #fff;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9em;
+  font-weight: bold;
+}
+
+.difficulty-btn:hover {
+  border-color: #00c8ff;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 200, 255, 0.3);
+}
+
+.difficulty-btn.active {
+  background: linear-gradient(135deg, #00c8ff 0%, #0088aa 100%);
+  border-color: #00ffff;
+  box-shadow: 0 0 20px rgba(0, 200, 255, 0.6);
+}
+
+.difficulty-btn .difficulty-name {
+  display: block;
+  font-size: 1em;
+}
+
+.difficulty-btn .difficulty-level {
+  display: block;
+  font-size: 0.8em;
+  opacity: 0.7;
+}
+
+/* Start Button */
+.start-button {
+  width: 100%;
+  padding: 15px;
+  font-size: 1.2em;
+  font-weight: bold;
+  background: linear-gradient(135deg, #ff0080 0%, #ff4d00 100%);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.start-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 30px rgba(255, 0, 128, 0.5);
+}
+
+.start-button:active {
+  transform: scale(0.98);
+}
+
+.menu-footer {
+  font-size: 0.9em;
+  color: #aaa;
+  margin-top: 20px;
+}
+
+.menu-footer p {
+  margin: 10px 0;
+}
+
+/* Garage Scene */
+.garage-scene {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.garage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid rgba(0, 200, 255, 0.3);
+}
+
+.garage-header h1 {
+  font-size: 2.5em;
+  color: #00c8ff;
+  text-shadow: 0 0 10px rgba(0, 200, 255, 0.5);
+  margin: 0;
+}
+
+.resources-display {
+  display: flex;
+  gap: 30px;
+}
+
+.resource {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 20px;
+  background: rgba(0, 200, 255, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(0, 200, 255, 0.3);
+}
+
+.resource .label {
+  font-size: 0.9em;
+  color: #aaa;
+  margin-bottom: 5px;
+}
+
+.resource .value {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #00ffff;
+}
+
+/* Garage Content */
+.garage-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  flex: 1;
+  margin-bottom: 30px;
+}
+
+.car-section,
+.driver-section {
+  background: rgba(30, 30, 50, 0.7);
+  border: 1px solid rgba(0, 200, 255, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.car-section h2,
+.driver-section h2 {
+  color: #00c8ff;
+  margin-top: 0;
+  font-size: 1.5em;
+}
+
+/* Car Display */
+.car-display {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.component-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+}
+
+.component-card {
+  background: linear-gradient(135deg, #2a2a4e 0%, #1a1a3e 100%);
+  border: 1px solid rgba(0, 200, 255, 0.3);
+  border-radius: 10px;
+  padding: 15px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.component-card:hover {
+  border-color: rgba(0, 200, 255, 0.8);
+  box-shadow: 0 5px 15px rgba(0, 200, 255, 0.2);
+  transform: translateY(-3px);
+}
+
+.component-name {
+  font-weight: bold;
+  color: #00c8ff;
+  margin-bottom: 5px;
+  font-size: 0.95em;
+}
+
+.component-tier {
+  font-size: 0.85em;
+  color: #888;
+  margin-bottom: 10px;
+}
+
+.component-stats {
+  font-size: 0.8em;
+  color: #aaa;
+  line-height: 1.6;
+}
+
+.car-stats {
+  background: rgba(40, 40, 60, 0.5);
+  border: 1px solid rgba(0, 200, 255, 0.2);
+  border-radius: 10px;
+  padding: 15px;
+}
+
+.car-stats h3 {
+  margin-top: 0;
+  color: #00ffff;
+  font-size: 1.1em;
+}
+
+.stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(0, 200, 255, 0.1);
+  font-size: 0.95em;
+}
+
+.stat:last-child {
+  border-bottom: none;
+}
+
+.stat .value {
+  font-weight: bold;
+  color: #00ffff;
+}
+
+/* Driver Display */
+.driver-display {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.driver-info {
+  text-align: center;
+  padding: 15px;
+  background: rgba(0, 200, 255, 0.1);
+  border-radius: 8px;
+}
+
+.driver-info h3 {
+  margin: 0 0 5px 0;
+  color: #00c8ff;
+  font-size: 1.3em;
+}
+
+.driver-level {
+  font-size: 0.95em;
+  color: #00ffff;
+}
+
+.driver-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.driver-skills {
+  background: rgba(0, 200, 255, 0.1);
+  border-radius: 8px;
+  padding: 15px;
+}
+
+.driver-skills h4 {
+  margin: 0 0 10px 0;
+  color: #00c8ff;
+}
+
+.skill {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(0, 200, 255, 0.1);
+  font-size: 0.9em;
+}
+
+.skill:last-child {
+  border-bottom: none;
+}
+
+.skill-name {
+  color: #fff;
+}
+
+.skill-level {
+  color: #888;
+  font-size: 0.85em;
+}
+
+/* Garage Actions */
+.garage-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.action-button {
+  padding: 15px 40px;
+  font-size: 1.1em;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.action-button.ready {
+  background: linear-gradient(135deg, #00c800 0%, #008800 100%);
+  color: white;
+}
+
+.action-button.ready:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 30px rgba(0, 200, 0, 0.5);
+}
+
+/* Map Scene */
+.map-scene {
+  padding: 40px;
+  text-align: center;
+}
+
+.map-scene h1 {
+  color: #00c8ff;
+  font-size: 2.5em;
+  margin-bottom: 20px;
+}
+
+.map-scene p {
+  color: #aaa;
+  font-size: 1.2em;
+  margin-bottom: 30px;
+}
+
+.map-scene button {
+  padding: 12px 30px;
+  background: linear-gradient(135deg, #00c8ff 0%, #0088aa 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.map-scene button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(0, 200, 255, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .garage-content {
+    grid-template-columns: 1fr;
+  }
+
+  .resources-display {
+    flex-direction: column;
+    gap: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .menu-container {
+    margin: 20px;
+  }
+
+  .menu-container h1 {
+    font-size: 2.5em;
+  }
+
+  .difficulty-buttons {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .garage-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .component-grid {
+    grid-template-columns: 1fr;
+  }
+}
