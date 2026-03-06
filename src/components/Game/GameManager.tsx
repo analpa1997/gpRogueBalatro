@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import type { GameState, Driver, Car, Resources } from '../../types';
+import type { GameState, Driver, Car, Resources, Circuit } from '../../types';
 import { GameScene } from '../../types';
-import { STARTING_RESOURCES, BASE_CAR_COMPONENTS, DIFFICULTY_LEVELS } from '../../constants';
+import { STARTING_RESOURCES, BASE_CAR_COMPONENTS, DIFFICULTY_LEVELS, GAME_PROGRESSION, GENERATION_PARAMS_BY_DIFFICULTY } from '../../constants';
+import { ProceduralCircuitGenerator } from '../../systems/procedural-generation/circuitGenerator';
+import { RaceSimulation } from '../../systems/circuit-system/raceSimulation';
+import { CircuitManager } from '../../systems/circuit-system/circuitManager';
 import './Game.css';
 
 interface GameManagerProps {
@@ -12,10 +15,12 @@ export const GameManager: React.FC<GameManagerProps> = ({ onStateChange }) => {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [currentScene, setCurrentScene] = useState<GameScene>(GameScene.MENU);
   const [selectedDifficulty, setSelectedDifficulty] = useState<number>(1);
+  const [circuitManager] = useState(() => new CircuitManager());
 
   // Initialize new game
   const startNewGame = (difficulty: number) => {
     const resources: Resources = STARTING_RESOURCES[difficulty] as Resources;
+    const circuitsSeed = Math.floor(Math.random() * 1000000);
 
     const playerCar: Car = {
       components: {
@@ -49,15 +54,51 @@ export const GameManager: React.FC<GameManagerProps> = ({ onStateChange }) => {
       }
     };
 
+    // Generate circuits for this run
+    const generatedCircuits = ProceduralCircuitGenerator.generateRunCircuits(
+      {
+        seed: circuitsSeed,
+        difficulty,
+        minSections: GAME_PROGRESSION.CIRCUITS_PER_SEASON,
+        maxSections: GAME_PROGRESSION.CIRCUITS_PER_SEASON,
+        parameters: GENERATION_PARAMS_BY_DIFFICULTY[difficulty] || GENERATION_PARAMS_BY_DIFFICULTY[5]
+      },
+      GAME_PROGRESSION.CIRCUITS_PER_SEASON
+    );
+
+    // Calculate lap times for each circuit
+    const circuitsWithTimes = generatedCircuits.map(circuit => {
+      const playerLapTime = RaceSimulation.calculateLapTime(
+        circuit,
+        playerCar.totalStats,
+        playerDriver.stats
+      );
+      
+      // Store calculated times for reference
+      (circuit as any).playerBestLapTime = playerLapTime;
+      
+      if (circuit.boss) {
+        const bossLapTime = RaceSimulation.calculateBossLapTime(circuit);
+        (circuit as any).bossLapTime = bossLapTime;
+      }
+      
+      return circuit;
+    });
+
+    // Set up circuit manager
+    circuitManager.setCircuits(circuitsWithTimes);
+
+    const firstCircuit = circuitsWithTimes[0];
+
     const newState: GameState = {
-      currentCircuit: null as any, // Will be set when circuit is generated
+      currentCircuit: firstCircuit,
       playerCar,
       playerDriver,
       resources,
       completedCircuits: [],
       currentRun: {
         difficulty,
-        circuitsSeed: Math.floor(Math.random() * 1000000),
+        circuitsSeed,
         upgrdesObtained: [],
         currentCircuitIndex: 0
       }
@@ -92,6 +133,8 @@ export const GameManager: React.FC<GameManagerProps> = ({ onStateChange }) => {
       {gameState && currentScene === GameScene.MAP && (
         <MapScene
           onSceneChange={switchScene}
+          circuitManager={circuitManager}
+          gameState={gameState}
         />
       )}
     </div>
@@ -288,16 +331,150 @@ const DriverDisplay: React.FC<DriverDisplayProps> = ({ driver }) => {
 
 interface MapSceneProps {
   onSceneChange: (scene: GameScene) => void;
+  circuitManager: CircuitManager;
+  gameState: GameState;
 }
 
-const MapScene: React.FC<MapSceneProps> = ({ onSceneChange }) => {
+const MapScene: React.FC<MapSceneProps> = ({ onSceneChange, circuitManager, gameState }) => {
+  const circuits = circuitManager.getAllCircuits();
+  const progress = circuitManager.getProgress();
+
   return (
     <div className="map-scene">
-      <h1>Circuit Map</h1>
-      <p>Circuits will be generated here based on your difficulty level</p>
-      <button onClick={() => onSceneChange(GameScene.GARAGE)}>
-        Back to Garage
-      </button>
+      <div className="map-header">
+        <h1>Circuit Map</h1>
+        <div className="progress-info">
+          <span>Season Progress: {progress.current} / {progress.total}</span>
+        </div>
+      </div>
+
+      <div className="circuits-grid">
+        {circuits.map((circuit, index) => (
+          <CircuitCard
+            key={circuit.id}
+            circuit={circuit}
+            index={index}
+            isCurrent={index === gameState.currentRun.currentCircuitIndex}
+            isCompleted={gameState.completedCircuits.some(r => r.circuitId === circuit.id)}
+            circuitManager={circuitManager}
+          />
+        ))}
+      </div>
+
+      <div className="map-actions">
+        <button
+          className="action-button"
+          onClick={() => onSceneChange(GameScene.GARAGE)}
+        >
+          Back to Garage
+        </button>
+      </div>
+    </div>
+  );
+};
+
+interface CircuitCardProps {
+  circuit: Circuit;
+  index: number;
+  isCurrent: boolean;
+  isCompleted: boolean;
+  circuitManager: CircuitManager;
+}
+
+const CircuitCard: React.FC<CircuitCardProps> = ({
+  circuit,
+  index,
+  isCurrent,
+  isCompleted,
+  circuitManager
+}) => {
+  const difficulty = circuitManager.getCircuitDifficulty(circuit);
+  const difficultyPercentage = Math.round(difficulty * 100);
+  const playerLapTime = (circuit as any).playerBestLapTime || circuit.baseTargetLapTime;
+  const bossLapTime = (circuit as any).bossLapTime;
+
+  const getDifficultyColor = (diff: number) => {
+    if (diff < 0.3) return '#00ff00';
+    if (diff < 0.5) return '#ffff00';
+    if (diff < 0.7) return '#ff8800';
+    return '#ff0000';
+  };
+
+  return (
+    <div
+      className={`circuit-card ${isCurrent ? 'current' : ''} ${
+        isCompleted ? 'completed' : ''
+      }`}
+    >
+      <div className="circuit-number">Circuit {index + 1}</div>
+      <div className="circuit-title">{circuit.name}</div>
+
+      <div className="circuit-info">
+        <div className="info-row">
+          <span className="label">Length:</span>
+          <span className="value">{(circuit.length / 1000).toFixed(2)} km</span>
+        </div>
+
+        <div className="info-row">
+          <span className="label">Sections:</span>
+          <span className="value">{circuit.sections.length}</span>
+        </div>
+
+        <div className="info-row">
+          <span className="label">Difficulty:</span>
+          <div className="difficulty-bar">
+            <div
+              className="difficulty-fill"
+              style={{
+                width: `${difficultyPercentage}%`,
+                backgroundColor: getDifficultyColor(difficulty)
+              }}
+            />
+          </div>
+          <span className="value">{difficultyPercentage}%</span>
+        </div>
+
+        <div className="info-row">
+          <span className="label">Your Lap Time:</span>
+          <span className="value">{playerLapTime.toFixed(1)}s</span>
+        </div>
+
+        <div className="info-row">
+          <span className="label">Target Lap Time:</span>
+          <span className="value">{circuit.baseTargetLapTime.toFixed(1)}s</span>
+        </div>
+
+        {circuit.boss && (
+          <>
+            <div className="divider" />
+            <div className="boss-info">
+              <div className="boss-title">Boss: {circuit.boss.name}</div>
+              <div className="boss-stats">
+                <div className="stat">
+                  <span>Aggressiveness:</span>
+                  <span className="value">
+                    {(circuit.boss.drivingStyle.aggressiveness * 100).toFixed(0)}%
+                  </span>
+                </div>
+                <div className="stat">
+                  <span>Risk Taking:</span>
+                  <span className="value">
+                    {(circuit.boss.drivingStyle.riskTaking * 100).toFixed(0)}%
+                  </span>
+                </div>
+              </div>
+              {bossLapTime && (
+                <div className="boss-time">
+                  Boss Lap Time: <span className="value">{bossLapTime.toFixed(1)}s</span>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+
+      {isCompleted && <div className="completed-badge">✓ Completed</div>}
+      {isCurrent && <div className="current-badge">← Current</div>}
     </div>
   );
 };
