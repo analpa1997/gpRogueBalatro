@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { GameState, GameScene, Driver, Car, Resources } from '../types';
-import { STARTING_RESOURCES, BASE_CAR_COMPONENTS, DIFFICULTY_LEVELS } from '../constants';
-import './Game/Game.css';
+import React, { useState } from 'react';
+import type { GameState, Driver, Car, Resources } from '../../types';
+import { GameScene } from '../../types';
+import { STARTING_RESOURCES, BASE_CAR_COMPONENTS, DIFFICULTY_LEVELS } from '../../constants';
+import './Game.css';
 
 interface GameManagerProps {
   onStateChange?: (state: GameState) => void;
@@ -67,16 +68,6 @@ export const GameManager: React.FC<GameManagerProps> = ({ onStateChange }) => {
     onStateChange?.(newState);
   };
 
-  const updateResources = (newResources: Partial<Resources>) => {
-    if (!gameState) return;
-    const updated = {
-      ...gameState,
-      resources: { ...gameState.resources, ...newResources }
-    };
-    setGameState(updated);
-    onStateChange?.(updated);
-  };
-
   const switchScene = (scene: GameScene) => {
     setCurrentScene(scene);
   };
@@ -95,13 +86,11 @@ export const GameManager: React.FC<GameManagerProps> = ({ onStateChange }) => {
         <GarageScene
           gameState={gameState}
           onSceneChange={switchScene}
-          onResourcesUpdate={updateResources}
         />
       )}
 
       {gameState && currentScene === GameScene.MAP && (
         <MapScene
-          gameState={gameState}
           onSceneChange={switchScene}
         />
       )}
@@ -160,13 +149,11 @@ const MainMenu: React.FC<MainMenuProps> = ({
 interface GarageSceneProps {
   gameState: GameState;
   onSceneChange: (scene: GameScene) => void;
-  onResourcesUpdate: (resources: Partial<Resources>) => void;
 }
 
 const GarageScene: React.FC<GarageSceneProps> = ({
   gameState,
-  onSceneChange,
-  onResourcesUpdate
+  onSceneChange
 }) => {
   return (
     <div className="garage-scene">
@@ -300,11 +287,10 @@ const DriverDisplay: React.FC<DriverDisplayProps> = ({ driver }) => {
 };
 
 interface MapSceneProps {
-  gameState: GameState;
   onSceneChange: (scene: GameScene) => void;
 }
 
-const MapScene: React.FC<MapSceneProps> = ({ gameState, onSceneChange }) => {
+const MapScene: React.FC<MapSceneProps> = ({ onSceneChange }) => {
   return (
     <div className="map-scene">
       <h1>Circuit Map</h1>

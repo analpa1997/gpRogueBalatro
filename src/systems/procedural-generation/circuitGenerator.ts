@@ -1,17 +1,16 @@
-import {
+import type {
   Circuit,
   CircuitSection,
   BossData,
   ProceduralCircuitConfig,
   WeatherType
-} from '../types';
+} from '../../types';
 import {
   CIRCUIT_GEN_CONSTANTS,
   GENERATION_PARAMS_BY_DIFFICULTY,
-  BOSS_CONFIGS,
-  WEATHER_EFFECTS
-} from '../constants';
-import { SeededRandom, ProceduralUtils } from '../utils/procedural';
+  BOSS_CONFIGS
+} from '../../constants';
+import { SeededRandom, ProceduralUtils } from '../../utils/procedural';
 
 export class ProceduralCircuitGenerator {
   /**
@@ -63,7 +62,7 @@ export class ProceduralCircuitGenerator {
     difficulty: number
   ): CircuitSection[] {
     const sections: CircuitSection[] = [];
-    const sectionTypes = CIRCUIT_GEN_CONSTANTS.SECTION_TYPES;
+    const sectionTypes: Array<CircuitSection['type']> = ['straight', 'slowCorner', 'fastCorner', 'technical', 'mixed'];
 
     for (let i = 0; i < count; i++) {
       const type = rng.choice(sectionTypes);
@@ -166,7 +165,8 @@ export class ProceduralCircuitGenerator {
         )
       },
       carStats: Object.entries(bossTemplate.carStats).reduce((acc, [key, value]) => {
-        acc[key as keyof typeof value] = Math.floor(value * variation) as any;
+        const typedAcc = acc as Record<string, typeof value>;
+        typedAcc[key] = Math.floor(value * variation);
         return acc;
       }, {} as BossData['carStats'])
     };

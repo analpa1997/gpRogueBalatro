@@ -154,15 +154,17 @@ export interface ProceduralCircuitConfig {
 export type WeatherType = 'dry' | 'wet' | 'rainy' | 'fog';
 
 // UI/Game flow types
-export enum GameScene {
-  MENU = 'menu',
-  GARAGE = 'garage',
-  CIRCUIT = 'circuit',
-  RACE = 'race',
-  UPGRADES = 'upgrades',
-  RESULTS = 'results',
-  MAP = 'map'
-}
+export const GameScene = {
+  MENU: 'menu',
+  GARAGE: 'garage',
+  CIRCUIT: 'circuit',
+  RACE: 'race',
+  UPGRADES: 'upgrades',
+  RESULTS: 'results',
+  MAP: 'map'
+} as const;
+
+export type GameScene = typeof GameScene[keyof typeof GameScene];
 
 export interface UIState {
   currentScene: GameScene;

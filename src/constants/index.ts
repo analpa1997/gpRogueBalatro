@@ -1,4 +1,4 @@
-import { CarComponent, BossData, Resources, GenerationParameters } from '../types';
+import type { CarComponent, BossData, Resources, GenerationParameters } from '../types';
 
 // Career difficulty progression
 export const DIFFICULTY_LEVELS = {

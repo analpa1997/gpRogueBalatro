@@ -1,6 +1,6 @@
-import { Upgrade, Resources, UpgradeEffect, CarComponent } from '../types';
-import { RARITY_WEIGHTS } from '../constants';
-import { SeededRandom, ProceduralUtils } from '../utils/procedural';
+import type { Upgrade, Resources, UpgradeEffect } from '../../types';
+import { RARITY_WEIGHTS } from '../../constants';
+import { SeededRandom } from '../../utils/procedural';
 
 interface UpgradeTemplate {
   name: string;
@@ -14,7 +14,7 @@ const UPGRADE_TEMPLATES: Record<string, UpgradeTemplate> = {
   engines: {
     name: 'Engine Upgrade',
     description: 'Improve your engine performance',
-    effectGenerator: (rng, rarity, difficulty) => ({
+    effectGenerator: (rng, rarity) => ({
       statModifiers: {
         topSpeed: 10 + rng.nextInt(5, 20) * (rarity === 'legendary' ? 2 : 1),
         acceleration: 8 + rng.nextInt(4, 15) * (rarity === 'legendary' ? 1.5 : 1)
@@ -35,7 +35,7 @@ const UPGRADE_TEMPLATES: Record<string, UpgradeTemplate> = {
   suspension: {
     name: 'Suspension Upgrade',
     description: 'Enhance handling and stability',
-    effectGenerator: (rng, rarity, difficulty) => ({
+    effectGenerator: (rng, rarity) => ({
       statModifiers: {
         handling: 12 + rng.nextInt(5, 18) * (rarity === 'legendary' ? 1.8 : 1),
         stability: 10 + rng.nextInt(5, 15) * (rarity === 'legendary' ? 1.5 : 1)
@@ -56,7 +56,7 @@ const UPGRADE_TEMPLATES: Record<string, UpgradeTemplate> = {
   tires: {
     name: 'Tire Upgrade',
     description: 'Better grip and performance',
-    effectGenerator: (rng, rarity, difficulty) => ({
+    effectGenerator: (rng, rarity) => ({
       statModifiers: {
         braking: 8 + rng.nextInt(3, 12) * (rarity === 'legendary' ? 1.7 : 1),
         acceleration: 6 + rng.nextInt(2, 10) * (rarity === 'legendary' ? 1.5 : 1),
@@ -78,7 +78,7 @@ const UPGRADE_TEMPLATES: Record<string, UpgradeTemplate> = {
   brakes: {
     name: 'Braking System Upgrade',
     description: 'Improve stopping power',
-    effectGenerator: (rng, rarity, difficulty) => ({
+    effectGenerator: (rng, rarity) => ({
       statModifiers: {
         braking: 15 + rng.nextInt(8, 20) * (rarity === 'legendary' ? 2 : 1)
       }
@@ -98,7 +98,7 @@ const UPGRADE_TEMPLATES: Record<string, UpgradeTemplate> = {
   driverSkill: {
     name: 'Driver Skill Training',
     description: 'Develop new driving techniques',
-    effectGenerator: (rng, rarity, difficulty) => ({
+    effectGenerator: (rng, rarity) => ({
       newSkill: {
         id: `skill_${Date.now()}`,
         name: generateSkillName(rng),
@@ -188,10 +188,7 @@ export class UpgradeGenerator {
   /**
    * Apply an upgrade to the player's configuration
    */
-  static applyUpgrade(
-    upgrade: Upgrade,
-    targetType: 'car' | 'driver'
-  ): Partial<any> {
+  static applyUpgrade(upgrade: Upgrade): Partial<any> {
     // This will be expanded when we integrate with game state
     return upgrade.effect;
   }
